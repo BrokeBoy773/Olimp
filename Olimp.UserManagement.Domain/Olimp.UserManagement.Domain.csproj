@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="ValueObjects\Address.cs~RF2da439dd.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CSharpFunctionalExtensions" Version="3.0.0" />
   </ItemGroup>
 

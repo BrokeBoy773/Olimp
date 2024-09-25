@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
-using Olimp.UserContext.Domain.ValueObjects;
+using Olimp.UserManagement.Domain.ValueObjects;
 using Xunit;
 
-namespace Olimp.UserContext.Domain.Tests.ValueObjectsTests
+namespace Olimp.UserManagement.Domain.Tests.ValueObjectsTests
 {
     public class AddressTests
     {

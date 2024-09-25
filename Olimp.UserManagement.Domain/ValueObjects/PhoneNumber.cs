@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using System.Text.RegularExpressions;
 
-namespace Olimp.UserContext.Domain.ValueObjects
+namespace Olimp.UserManagement.Domain.ValueObjects
 {
     public class PhoneNumber : ValueObject
     {

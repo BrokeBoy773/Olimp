@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
-using Olimp.UserContext.Domain.Entities;
+using Olimp.UserManagement.Domain.Entities;
 
-namespace Olimp.UserContext.Domain.ApplicationServices
+namespace Olimp.UserManagement.Domain.ApplicationServices
 {
     public class UserService
     {

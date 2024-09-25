@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
-using Olimp.UserContext.Domain.ValueObjects;
+using Olimp.UserManagement.Domain.ValueObjects;
 
-namespace Olimp.UserContext.Domain.Entities
+namespace Olimp.UserManagement.Domain.Entities
 {
     public class User
     {
@@ -10,6 +10,10 @@ namespace Olimp.UserContext.Domain.Entities
         public Email Email { get; private set; } = null!;
         public PhoneNumber PhoneNumber { get; private set; } = null!;
         public Address Address { get; private set; } = null!;
+
+        private User()
+        {
+        }
 
         private User(
             Guid id,

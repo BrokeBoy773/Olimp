@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
-using Olimp.UserContext.Domain.ValueObjects;
+using Olimp.UserManagement.Domain.ValueObjects;
 using Xunit;
 
-namespace Olimp.UserContext.Domain.Tests.ValueObjectsTests
+namespace Olimp.UserManagement.Domain.Tests.ValueObjectsTests
 {
     public class EmailTests
     {
@@ -80,7 +80,7 @@ namespace Olimp.UserContext.Domain.Tests.ValueObjectsTests
 
 #nullable disable
         [Fact]
-        public void CreatePhoneNumber_WithNullString_ReturnsEmailValueObject()
+        public void CreateEmail_WithNullString_ReturnsEmailValueObject()
         {
             List<string> existingEmails = [];
             string email = null;
