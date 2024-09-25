@@ -30,7 +30,9 @@ namespace Olimp.UserContext.Domain.Entities
             string firstName,
             string lastName,
             string email,
+            List<string> existingEmails,
             string phoneNumber,
+            List<string> existingPhoneNumbers,
             string postalCode,
             string region,
             string city,
@@ -43,20 +45,24 @@ namespace Olimp.UserContext.Domain.Entities
             if (resultName.IsFailure)
                 return Result.Failure<User>("Name is invalid");
 
-            Result<Email> resultEmail = Email.Create(email);
+
+            Result<Email> resultEmail = Email.Create(email, existingEmails);
 
             if (resultEmail.IsFailure)
                 return Result.Failure<User>("Email is invalid");
 
-            Result<PhoneNumber> resultPhoneNumber = PhoneNumber.Create(phoneNumber);
+
+            Result<PhoneNumber> resultPhoneNumber = PhoneNumber.Create(phoneNumber, existingPhoneNumbers);
 
             if (resultPhoneNumber.IsFailure)
                 return Result.Failure<User>("PhoneNumber is invalid");
+
 
             Result<Address> resultAddress = Address.Create(postalCode, region, city, street, houseNumber, apartmentNumber);
 
             if (resultAddress.IsFailure)
                 return Result.Failure<User>("Address is invalid");
+
 
             User user = new(id, resultName.Value, resultEmail.Value, resultPhoneNumber.Value, resultAddress.Value);
 

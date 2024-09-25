@@ -62,6 +62,17 @@ namespace Olimp.UserContext.Domain.Tests.ValueObjectsTests
             Assert.True(result.IsFailure);
         }
 
+        [Fact]
+        public void CreateName_WithOnlySpaces_ReturnsNameValueObject()
+        {
+            string firstName = "    ";
+            string lastName = "    ";
+
+            Result<Name> result = Name.Create(firstName, lastName);
+
+            Assert.True(result.IsFailure);
+        }
+
 #nullable disable
         [Fact]
         public void CreateName_WithNullStrings_ReturnsNameValueObject()
