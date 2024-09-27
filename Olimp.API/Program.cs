@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Olimp.UserManagement.Infrastructure.EntityFrameworkCore;
 using Serilog;
 
@@ -19,13 +18,7 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-builder.Services.AddDbContext<UserManagementDbContext>(options =>
-{
-    options
-    .UseNpgsql(builder.Configuration.GetConnectionString(nameof(UserManagementDbContext)))
-    .UseLoggerFactory(LoggerFactory.Create(loggingBuilder => loggingBuilder.AddSerilog()))
-    .EnableSensitiveDataLogging();
-});
+builder.Services.AddDbContext<UserManagementDbContext>();
 
 var app = builder.Build();
 
@@ -37,6 +30,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
