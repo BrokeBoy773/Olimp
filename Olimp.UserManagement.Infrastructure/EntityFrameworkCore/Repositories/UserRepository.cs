@@ -12,7 +12,7 @@ namespace Olimp.UserManagement.Infrastructure.EntityFrameworkCore.Repositories
         public async Task<Result> CreateUserAsync(User user, CancellationToken ct)
         {
             if (user is null)
-                return Result.Failure("User is null");
+                return Result.Failure("CreateUserAsync: user is null");
 
             await _dbContext.AddAsync(user, ct);
             await _dbContext.SaveChangesAsync(ct);
@@ -20,7 +20,7 @@ namespace Olimp.UserManagement.Infrastructure.EntityFrameworkCore.Repositories
             return Result.Success();
         }
 
-        public async Task<Result<User>> GetUserByEmail(string email, CancellationToken ct)
+        public async Task<Result<User>> GetUserByEmailAsync(string email, CancellationToken ct)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return Result.Failure<User>("email is null or white space");
@@ -31,8 +31,20 @@ namespace Olimp.UserManagement.Infrastructure.EntityFrameworkCore.Repositories
 
             if (user is null)
                 return Result.Failure<User>("User not found");
-
             return Result.Success(user);
+        }
+
+        public async Task<Result<(List<string> ExistingEmails, List<string> ExistingPhoneNumbers), string>> GetEmailsAndPhoneNumbersAsync(CancellationToken ct)
+        {
+            List<User> users = await _dbContext.Users.ToListAsync(ct);
+
+            if (users is null)
+                return Result.Failure<(List<string>, List<string>), string>("GetEmailsAndPhoneNumbers: users is null");
+
+            List<string> existingEmails = users.Select(user => user.Email.EmailAddress).ToList();
+            List<string> existingPhoneNumbers = users.Select(user => user.PhoneNumber.Number).ToList();
+
+            return Result.Success<(List<string>, List<string>), string>((existingEmails, existingPhoneNumbers));
         }
     }
 }

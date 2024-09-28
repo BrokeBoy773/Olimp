@@ -43,6 +43,13 @@ namespace Olimp.UserManagement.Infrastructure.EntityFrameworkCore.Configurations
                 a.Property(a => a.HouseNumber).IsRequired().HasColumnName("HouseNumber").HasMaxLength(64);
                 a.Property(a => a.ApartmentNumber).IsRequired().HasColumnName("ApartmentNumber").HasMaxLength(64);
             });
+
+            builder.ComplexProperty(u => u.PasswordHash, p =>
+            {
+                p.IsRequired();
+
+                p.Property(p => p.Hash).IsRequired().HasColumnName("PasswordHash").HasMaxLength(128);
+            });
         }
     }
 }

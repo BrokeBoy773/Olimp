@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Olimp.UserManagement.Domain.Entities;
 using Olimp.UserManagement.Infrastructure.Authentication.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -11,7 +10,7 @@ namespace Olimp.UserManagement.Infrastructure.Authentication
     {
         private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
-        public string GenerateJwtToken(User user)
+        public string GenerateJwtSecurityToken()
         {
             SigningCredentials signingCredentials = new(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey)), SecurityAlgorithms.HmacSha256);

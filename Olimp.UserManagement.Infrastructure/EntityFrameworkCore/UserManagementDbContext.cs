@@ -10,7 +10,7 @@ namespace Olimp.UserManagement.Infrastructure.EntityFrameworkCore
     {
         private readonly IConfiguration _configuration = configuration;
 
-        public DbSet<User> Users { get; set; }
+        public required DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

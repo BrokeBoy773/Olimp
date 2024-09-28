@@ -10,6 +10,7 @@ namespace Olimp.UserManagement.Domain.Entities
         public Email Email { get; private set; } = null!;
         public PhoneNumber PhoneNumber { get; private set; } = null!;
         public Address Address { get; private set; } = null!;
+        public PasswordHash PasswordHash { get; private set; } = null!;
 
         private User()
         {
@@ -20,13 +21,15 @@ namespace Olimp.UserManagement.Domain.Entities
             Name name,
             Email email,
             PhoneNumber phoneNumber,
-            Address address)
+            Address address,
+            PasswordHash passwordHash)
         {
             Id = id;
             Name = name;
             Email = email;
             PhoneNumber = phoneNumber;
             Address = address;
+            PasswordHash = passwordHash;
         }
 
         public static Result<User> Create(
@@ -42,7 +45,8 @@ namespace Olimp.UserManagement.Domain.Entities
             string city,
             string street,
             string houseNumber,
-            string apartmentNumber)
+            string apartmentNumber,
+            string passwordHash)
         {
             Result<Name> resultName = Name.Create(firstName, lastName);
 
@@ -68,7 +72,19 @@ namespace Olimp.UserManagement.Domain.Entities
                 return Result.Failure<User>("Address is invalid");
 
 
-            User user = new(id, resultName.Value, resultEmail.Value, resultPhoneNumber.Value, resultAddress.Value);
+            Result<PasswordHash> resultPasswordHash = PasswordHash.Create(passwordHash);
+
+            if (resultPasswordHash.IsFailure)
+                return Result.Failure<User>("Password is invalid");
+
+
+            User user = new(
+                id,
+                resultName.Value,
+                resultEmail.Value,
+                resultPhoneNumber.Value,
+                resultAddress.Value,
+                resultPasswordHash.Value);
 
             return Result.Success(user);
         }

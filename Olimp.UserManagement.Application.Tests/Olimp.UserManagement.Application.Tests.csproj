@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Olimp.UserManagement.Infrastructure\Olimp.UserManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\Olimp.UserManagement.Application\Olimp.UserManagement.Application.csproj" />
   </ItemGroup>
 
 </Project>
