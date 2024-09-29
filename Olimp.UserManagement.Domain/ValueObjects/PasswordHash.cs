@@ -11,16 +11,21 @@ namespace Olimp.UserManagement.Domain.ValueObjects
             Hash = hash;
         }
 
-        public static Result<PasswordHash> Create(string hash)
+        public static Result<PasswordHash, List<string>> Create(string hash)
         {
+            List<string> errorsList = [];
+
             Result<string> resultHash = ValidateHash(hash);
 
             if (resultHash.IsFailure)
-                return Result.Failure<PasswordHash>("hash is invalid");
+                errorsList.Add(resultHash.Error);
+
+            if (errorsList.Count > 0)
+                return Result.Failure<PasswordHash, List<string>>(errorsList);
 
             PasswordHash validPasswordHash = new(resultHash.Value);
             
-            return Result.Success(validPasswordHash);
+            return Result.Success<PasswordHash, List<string>>(validPasswordHash);
         }
 
         private static Result<string> ValidateHash(string hash)

@@ -4,7 +4,7 @@ namespace Olimp.UserManagement.Application.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<Result> Register(
+        Task<Result<bool, List<string>>> RegisterAsync(
             string firstName,
             string lastName,
             string email,
@@ -19,7 +19,7 @@ namespace Olimp.UserManagement.Application.Interfaces
             string repeatPassword,
             CancellationToken ct);
 
-        Task<Result<string>> Login(
+        Task<Result<string>> LoginAsync(
             string email,
             string password,
             CancellationToken ct);

@@ -14,17 +14,21 @@ namespace Olimp.UserManagement.Domain.ValueObjects
             Number = number;
         }
 
-        public static Result<PhoneNumber> Create(string phoneNumber, List<string> existingPhoneNumbers)
+        public static Result<PhoneNumber, List<string>> Create(string phoneNumber, List<string> existingPhoneNumbers)
         {
+            List<string> errorsList = [];
+
             Result<string> resultNumber = ValidateNumber(phoneNumber, existingPhoneNumbers);
 
             if (resultNumber.IsFailure)
-                return Result.Failure<PhoneNumber>("phoneNumber is invalid");
+                errorsList.Add(resultNumber.Error);
 
+            if (errorsList.Count > 0)
+                return Result.Failure<PhoneNumber, List<string>>(errorsList);
 
             PhoneNumber validPhoneNumber = new(resultNumber.Value);
 
-            return Result.Success(validPhoneNumber);
+            return Result.Success<PhoneNumber, List<string>>(validPhoneNumber);
         }
 
         private static Result<string> ValidateNumber(string phoneNumber, List<string> existingPhoneNumbers)

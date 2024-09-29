@@ -21,9 +21,4 @@
     <ProjectReference Include="..\Olimp.UserManagement.Application\Olimp.UserManagement.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="DTOs\" />
-  </ItemGroup>
-
 </Project>

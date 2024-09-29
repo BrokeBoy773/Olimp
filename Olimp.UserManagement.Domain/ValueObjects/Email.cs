@@ -15,17 +15,21 @@ namespace Olimp.UserManagement.Domain.ValueObjects
             EmailAddress = emailAddress;
         }
 
-        public static Result<Email> Create(string email, List<string> existingEmails)
+        public static Result<Email, List<string>> Create(string email, List<string> existingEmails)
         {
+            List<string> errorsList = [];
+
             Result<string> resultEmail = ValidateEmail(email, existingEmails);
 
             if (resultEmail.IsFailure)
-                return Result.Failure<Email>("email is invalid");
+                errorsList.Add(resultEmail.Error);
 
+            if (errorsList.Count > 0)
+                return Result.Failure<Email, List<string>>(errorsList);
 
             Email validEmail = new(resultEmail.Value);
 
-            return Result.Success(validEmail);
+            return Result.Success<Email, List<string>>(validEmail);
         }
 
         private static Result<string> ValidateEmail(string email, List<string> existingEmails)

@@ -17,23 +17,28 @@ namespace Olimp.UserManagement.Domain.ValueObjects
             LastName = lastName;
         }
 
-        public static Result<Name> Create(string firstName, string lastName)
+        public static Result<Name, List<string>> Create(string firstName, string lastName)
         {
+            List<string> errorsList = [];
+
             Result<string> resultFirstName = ValidateFirstName(firstName);
 
             if (resultFirstName.IsFailure)
-                return Result.Failure<Name>("firstName is invalid");
+                errorsList.Add(resultFirstName.Error);
 
 
             Result<string> resultLastName = ValidateLastName(lastName);
 
             if (resultLastName.IsFailure)
-                return Result.Failure<Name>("lastName is invalid");
+                errorsList.Add(resultLastName.Error);
 
+
+            if (errorsList.Count > 0)
+                return Result.Failure<Name, List<string>>(errorsList);
 
             Name validName = new(resultFirstName.Value, resultLastName.Value);
 
-            return Result.Success(validName);
+            return Result.Success<Name, List<string>>(validName);
         }
 
         private static Result<string> ValidateFirstName(string firstName)

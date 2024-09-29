@@ -35,7 +35,7 @@ namespace Olimp.UserManagement.Domain.ValueObjects
             ApartmentNumber = apartmentNumber;
         }
 
-        public static Result<Address> Create(
+        public static Result<Address, List<string>> Create(
             string postalCode,
             string region,
             string city,
@@ -43,41 +43,46 @@ namespace Olimp.UserManagement.Domain.ValueObjects
             string houseNumber,
             string apartmentNumber)
         {
+            List<string> errorsList = [];
+
             Result<string> resultPostalCode = ValidatePostalCode(postalCode);
 
             if (resultPostalCode.IsFailure)
-                return Result.Failure<Address>("postalCode is invalid");
+                errorsList.Add(resultPostalCode.Error);
 
 
             Result<string> resultRegion = ValidateRegion(region);
 
             if (resultRegion.IsFailure)
-                return Result.Failure<Address>("region is invalid");
+                errorsList.Add(resultRegion.Error);
 
 
             Result<string> resultCity = ValidateCity(city);
 
             if (resultCity.IsFailure)
-                return Result.Failure<Address>("city is invalid");
+                errorsList.Add(resultCity.Error);
 
 
             Result<string> resultStreet = ValidateStreet(street);
 
             if (resultStreet.IsFailure)
-                return Result.Failure<Address>("street is invalid");
+                errorsList.Add(resultStreet.Error);
 
 
             Result<string> resultHouseNumber = ValidateHouseNumber(houseNumber);
 
             if (resultHouseNumber.IsFailure)
-                return Result.Failure<Address>("houseNumber is invalid");
+                errorsList.Add(resultHouseNumber.Error);
 
 
             Result<string> resultApartmentNumber = ValidateApartmentNumber(apartmentNumber);
 
             if (resultApartmentNumber.IsFailure)
-                return Result.Failure<Address>("apartmentNumber is invalid");
+                errorsList.Add(resultApartmentNumber.Error);
 
+
+            if (errorsList.Count > 0)
+                return Result.Failure<Address, List<string>>(errorsList);
 
             Address validAddress = new(
                 resultPostalCode.Value,
@@ -87,7 +92,7 @@ namespace Olimp.UserManagement.Domain.ValueObjects
                 resultHouseNumber.Value,
                 resultApartmentNumber.Value);
 
-            return Result.Success(validAddress);
+            return Result.Success<Address, List<string>>(validAddress);
         }
 
         private static Result<string> ValidatePostalCode(string postalCode)

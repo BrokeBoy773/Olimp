@@ -12,7 +12,7 @@ namespace Olimp.UserManagement.Infrastructure.EntityFrameworkCore.Repositories
         public async Task<Result> CreateUserAsync(User user, CancellationToken ct)
         {
             if (user is null)
-                return Result.Failure("CreateUserAsync: user is null");
+                return Result.Failure("user is null");
 
             await _dbContext.AddAsync(user, ct);
             await _dbContext.SaveChangesAsync(ct);
@@ -30,7 +30,7 @@ namespace Olimp.UserManagement.Infrastructure.EntityFrameworkCore.Repositories
                 .FirstOrDefaultAsync(u => u.Email.EmailAddress == email, ct);
 
             if (user is null)
-                return Result.Failure<User>("User not found");
+                return Result.Failure<User>("user not found");
             return Result.Success(user);
         }
 
@@ -39,7 +39,7 @@ namespace Olimp.UserManagement.Infrastructure.EntityFrameworkCore.Repositories
             List<User> users = await _dbContext.Users.ToListAsync(ct);
 
             if (users is null)
-                return Result.Failure<(List<string>, List<string>), string>("GetEmailsAndPhoneNumbers: users is null");
+                return Result.Failure<(List<string>, List<string>), string>("users is null");
 
             List<string> existingEmails = users.Select(user => user.Email.EmailAddress).ToList();
             List<string> existingPhoneNumbers = users.Select(user => user.PhoneNumber.Number).ToList();

@@ -32,7 +32,7 @@ namespace Olimp.UserManagement.Domain.Entities
             PasswordHash = passwordHash;
         }
 
-        public static Result<User> Create(
+        public static Result<User, List<string>> Create(
             Guid id,
             string firstName,
             string lastName,
@@ -48,35 +48,40 @@ namespace Olimp.UserManagement.Domain.Entities
             string apartmentNumber,
             string passwordHash)
         {
-            Result<Name> resultName = Name.Create(firstName, lastName);
+            List<string> errorsList = [];
+
+            Result<Name, List<string>> resultName = Name.Create(firstName, lastName);
 
             if (resultName.IsFailure)
-                return Result.Failure<User>("Name is invalid");
+                errorsList.AddRange(resultName.Error);
 
 
-            Result<Email> resultEmail = Email.Create(email, existingEmails);
+            Result<Email, List<string>> resultEmail = Email.Create(email, existingEmails);
 
             if (resultEmail.IsFailure)
-                return Result.Failure<User>("Email is invalid");
+                errorsList.AddRange(resultEmail.Error);
 
 
-            Result<PhoneNumber> resultPhoneNumber = PhoneNumber.Create(phoneNumber, existingPhoneNumbers);
+            Result<PhoneNumber, List<string>> resultPhoneNumber = PhoneNumber.Create(phoneNumber, existingPhoneNumbers);
 
             if (resultPhoneNumber.IsFailure)
-                return Result.Failure<User>("PhoneNumber is invalid");
+                errorsList.AddRange(resultPhoneNumber.Error);
 
 
-            Result<Address> resultAddress = Address.Create(postalCode, region, city, street, houseNumber, apartmentNumber);
+            Result<Address, List<string>> resultAddress = Address.Create(postalCode, region, city, street, houseNumber, apartmentNumber);
 
             if (resultAddress.IsFailure)
-                return Result.Failure<User>("Address is invalid");
+                errorsList.AddRange(resultAddress.Error);
 
 
-            Result<PasswordHash> resultPasswordHash = PasswordHash.Create(passwordHash);
+            Result<PasswordHash, List<string>> resultPasswordHash = PasswordHash.Create(passwordHash);
 
             if (resultPasswordHash.IsFailure)
-                return Result.Failure<User>("Password is invalid");
+                errorsList.AddRange(resultPasswordHash.Error);
 
+
+            if (errorsList.Count > 0)
+                return Result.Failure<User, List<string>>(errorsList);
 
             User user = new(
                 id,
@@ -86,7 +91,7 @@ namespace Olimp.UserManagement.Domain.Entities
                 resultAddress.Value,
                 resultPasswordHash.Value);
 
-            return Result.Success(user);
+            return Result.Success<User, List<string>>(user);
         }
     }
 }

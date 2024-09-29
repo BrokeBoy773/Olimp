@@ -16,7 +16,7 @@ namespace Olimp.UserManagement.Application.Services
         private readonly IPasswordHasher _passwordHasher = passwordHasher;
         private readonly IJwtProvider _jwtProvider = jwtProvider;
 
-        public async Task<Result> Register(
+        public async Task<Result<bool, List<string>>> RegisterAsync(
             string firstName,
             string lastName,
             string email,
@@ -31,26 +31,40 @@ namespace Olimp.UserManagement.Application.Services
             string repeatPassword,
             CancellationToken ct)
         {
-            Result<string> resultPassword = ValidatePassword(password);
+            List<string> errorsList = [];
 
-            if (resultPassword.IsFailure)
-                return Result.Failure("password is invalid");
-
-            if (repeatPassword != resultPassword.Value)
-                return Result.Failure("Doesn't match the password");
-
-            string passwordHash = _passwordHasher.GenerateHashedPassword(resultPassword.Value);
 
             Result<(List<string> ExistingEmails, List<string> ExistingPhoneNumbers), string> resultExistingEmailsAndExistingPhoneNumbers =
                 await _userRepository.GetEmailsAndPhoneNumbersAsync(ct);
 
             if (resultExistingEmailsAndExistingPhoneNumbers.IsFailure)
-                return Result.Failure("Error when retrieving a list of existing phone numbers and existing emails");
+            {
+                errorsList.Add(resultExistingEmailsAndExistingPhoneNumbers.Error);
+                return Result.Failure<bool, List<string>>(errorsList);
+            }
 
             List<string> existingEmails = resultExistingEmailsAndExistingPhoneNumbers.Value.ExistingEmails;
             List<string> existingPhoneNumbers = resultExistingEmailsAndExistingPhoneNumbers.Value.ExistingPhoneNumbers;
 
-            Result<User> resultUser = User.Create(
+
+            Result<string> resultPassword = ValidatePassword(password);
+
+            if (resultPassword.IsFailure)
+            {
+                errorsList.Add(resultPassword.Error);
+                return Result.Failure<bool, List<string>>(errorsList);
+            }
+
+            if (repeatPassword != resultPassword.Value)
+            {
+                errorsList.Add("Doesn't match the password");
+                return Result.Failure<bool, List<string>>(errorsList);
+            }
+
+            string passwordHash = _passwordHasher.GenerateHashedPassword(resultPassword.Value);
+
+
+            Result<User, List<string>> resultUser = User.Create(
                 Guid.NewGuid(),
                 firstName,
                 lastName,
@@ -67,17 +81,25 @@ namespace Olimp.UserManagement.Application.Services
                 passwordHash);
 
             if (resultUser.IsFailure)
-                return Result.Failure("Error creating user");
+            {
+                errorsList.AddRange(resultUser.Error);
+                return Result.Failure<bool, List<string>>(errorsList);
+            }
+
 
             Result resultCreateUser = await _userRepository.CreateUserAsync(resultUser.Value, ct);
 
             if (resultCreateUser.IsFailure)
-                return Result.Failure("Error adding user to database");
+                errorsList.Add(resultCreateUser.Error);
 
-            return Result.Success();
+
+            if (errorsList.Count > 0)
+                return Result.Failure<bool, List<string>>(errorsList);
+
+            return Result.Success<bool, List<string>>(true);
         }
 
-        public async Task<Result<string>> Login(
+        public async Task<Result<string>> LoginAsync(
             string email,
             string password,
             CancellationToken ct)
@@ -85,12 +107,14 @@ namespace Olimp.UserManagement.Application.Services
             Result<User> resultUser = await _userRepository.GetUserByEmailAsync(email, ct);
 
             if (resultUser.IsFailure)
-                return Result.Failure<string>("User not found");
+                return Result.Failure<string>(resultUser.Error);
+
 
             bool isVerify = _passwordHasher.VerifyPassword(password, resultUser.Value.PasswordHash.Hash);
 
             if (isVerify == false)
                 return Result.Failure<string>("Wrong password");
+
 
             string jwtSecurityToken = _jwtProvider.GenerateJwtSecurityToken();
 
